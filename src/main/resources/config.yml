@@ -1,0 +1,7 @@
+# the custom model data for a slime ball texture
+custom-model-data:
+  calm-slime: 404
+  active-slime: 200
+bucket-title: "&rSlime in a bucket"
+
+debug: false
