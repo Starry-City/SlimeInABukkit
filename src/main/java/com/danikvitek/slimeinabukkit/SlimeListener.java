@@ -4,7 +4,6 @@ import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
@@ -26,6 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,40 +51,40 @@ public class SlimeListener implements Listener {
         final var fromChunk = event.getFrom().getChunk();
         final var toChunk = event.getTo() == null ? null : event.getTo().getChunk();
         if (Objects.equals(fromChunk, toChunk)) return;
-        if (main.isDebug()) main.getLogger().info("PlayerMoveEvent was caught; Changing chunks");
+        main.debugLog("PlayerMoveEvent was caught; Changing chunks");
 
         updateSlimes(event.getPlayer().getInventory(), toChunk != null && toChunk.isSlimeChunk());
     }
 
     private void updateSlimes(final @NotNull PlayerInventory inventory, final boolean changeToActive) {
-        if (main.isDebug()) main.getLogger().info("updateSlimes: changeToActive = " + changeToActive);
+        main.debugLog("updateSlimes: changeToActive = " + changeToActive);
         for (final var itemStack : inventory) updateSlime(itemStack, changeToActive);
     }
 
-    private void updateSlime(final @NotNull ItemStack itemStack,
+    private void updateSlime(final @Nullable ItemStack itemStack,
                              final boolean changeToActive) {
         if (itemStack == null || itemStack.getType() != SLIME_BUCKET_MATERIAL ||
-            !itemStack.hasItemMeta() || !itemStack.getItemMeta().hasCustomModelData())
+                !itemStack.hasItemMeta() || !itemStack.getItemMeta().hasCustomModelData())
             return;
 
         final var itemMeta = itemStack.getItemMeta();
-        if (main.isDebug()) main.getLogger().info("updateSlimes: CMD = " + itemMeta.getCustomModelData());
+        main.debugLog("updateSlimes: CMD = " + itemMeta.getCustomModelData());
 
         if (changeToActive && itemMeta.getCustomModelData() == main.getCalmSlimeCmd())
             itemMeta.setCustomModelData(main.getActiveSlimeCmd());
         else if (!changeToActive && itemMeta.getCustomModelData() == main.getActiveSlimeCmd())
             itemMeta.setCustomModelData(main.getCalmSlimeCmd());
 
-        if (main.isDebug()) main.getLogger().info("updateSlimes: new CMD = " + itemMeta.getCustomModelData());
+        main.debugLog("updateSlimes: new CMD = " + itemMeta.getCustomModelData());
         itemStack.setItemMeta(itemMeta);
     }
 
     @EventHandler
     public void onClickAtSlime(final @NotNull PlayerInteractEntityEvent event) {
-        if (main.isDebug()) main.getLogger().info("PlayerInteractEntityEvent was caught");
+        main.debugLog("PlayerInteractEntityEvent was caught");
 
         if (!(event.getRightClicked() instanceof Slime)) return;
-        if (main.isDebug()) main.getLogger().info("PlayerInteractEntityEvent: clicked at slime");
+        main.debugLog("PlayerInteractEntityEvent: clicked at slime");
 
         final var slime = (Slime) event.getRightClicked();
         if (slime.getSize() != 1) return;
@@ -94,7 +94,7 @@ public class SlimeListener implements Listener {
 
         if (event.getHand() == EquipmentSlot.OFF_HAND && inventory.getItemInMainHand().getType() != Material.AIR)
             return;
-        if (main.isDebug()) main.getLogger().info("PlayerInteractEvent: Hand = " + event.getHand());
+        main.debugLog("PlayerInteractEvent: Hand = " + event.getHand());
         final var itemStack = event.getHand() == EquipmentSlot.HAND
                 ? inventory.getItemInMainHand()
                 : inventory.getItemInOffHand();
@@ -140,19 +140,7 @@ public class SlimeListener implements Listener {
             notFittedItems.forEach((index, notFittedSlimeBucket) -> {
                 final var droppedItem = player.getWorld().dropItem(player.getEyeLocation(), notFittedSlimeBucket);
                 droppedItem.setPickupDelay(40);
-
-                // Some magic from org.bukkit.EntityHuman.a logic
-                final var location = player.getLocation();
-                float f1 = (float) Math.sin(Math.toRadians(location.getPitch()) * 0.017453292F);
-                float f2 = (float) Math.cos(Math.toRadians(location.getPitch()) * 0.017453292F);
-                float f3 = (float) Math.sin(Math.toRadians(location.getYaw()) * 0.017453292F);
-                float f4 = (float) Math.cos(Math.toRadians(location.getYaw()) * 0.017453292F);
-                float f5 = RANDOM.nextFloat() * 6.2831855F;
-                float f6 = 0.02F * RANDOM.nextFloat();
-                droppedItem.setVelocity(new Vector(
-                        (-f3 * f2 * 0.3F) + Math.cos(f5) * f6,
-                        -f1 * 0.3F + 0.1F + (RANDOM.nextFloat() - RANDOM.nextFloat()) * 0.1F,
-                        (f4 * f2 * 0.3F) + Math.sin(f5) * f6));
+                droppedItem.setVelocity(player.getLocation().getDirection().clone().multiply(0.2));
             });
         } else player.getInventory().setItem(bucketStackSlot, slimeBucketStack);
 
@@ -177,23 +165,24 @@ public class SlimeListener implements Listener {
 
     @EventHandler
     public void onClickAtBlock(final @NotNull PlayerInteractEvent event) {
-        if (main.isDebug()) main.getLogger().info("PlayerInteractEvent was caught");
+        main.debugLog("PlayerInteractEvent was caught");
 
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        if (main.isDebug()) main.getLogger().info("PlayerInteractEvent: Action = " + event.getAction());
+        main.debugLog("PlayerInteractEvent: Action = " + event.getAction());
 
         final var player = event.getPlayer();
         if (event.getHand() == EquipmentSlot.OFF_HAND &&
                 player.getInventory().getItemInMainHand().getType() != Material.AIR) return;
-        if (main.isDebug()) main.getLogger().info("PlayerInteractEvent: Hand = " + event.getHand());
+        main.debugLog("PlayerInteractEvent: Hand = " + event.getHand());
 
         final var itemStack = event.getItem();
         if (itemStack == null || itemStack.getType() != SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) return;
 
         final var itemMeta = itemStack.getItemMeta();
         assert itemMeta != null;
-        if (itemMeta.getCustomModelData() != main.getCalmSlimeCmd() &&
-                itemMeta.getCustomModelData() != main.getActiveSlimeCmd()) return;
+        if (!itemMeta.hasCustomModelData() ||
+                (itemMeta.getCustomModelData() != main.getCalmSlimeCmd() &&
+                        itemMeta.getCustomModelData() != main.getActiveSlimeCmd())) return;
 
         placeSlime(event, player, itemStack, itemMeta);
     }
@@ -216,11 +205,12 @@ public class SlimeListener implements Listener {
                 .add(blockFace.getDirection());
         slimeReleaseLocation.setYaw(RANDOM.nextFloat() * 360f);
 
-        final var slime = (Slime) player.getWorld().spawnEntity(slimeReleaseLocation, EntityType.SLIME);
-        slime.setSize(1);
-        if (itemMeta.hasDisplayName() && !Objects.equals(
-            ChatColor.stripColor(itemMeta.getDisplayName()), ChatColor.stripColor(main.getSlimeBucketTitle())
-        )) slime.setCustomName(itemMeta.getDisplayName());
+        player.getWorld().spawn(slimeReleaseLocation, Slime.class, slime -> {
+            slime.setSize(1);
+            if (itemMeta.hasDisplayName() && !Objects.equals(
+                    ChatColor.stripColor(itemMeta.getDisplayName()), ChatColor.stripColor(main.getSlimeBucketTitle())
+            )) slime.setCustomName(itemMeta.getDisplayName());
+        });
 
         itemMeta.setCustomModelData(null);
         itemMeta.setDisplayName(null);
@@ -251,7 +241,7 @@ public class SlimeListener implements Listener {
         @NotNull ItemStack[] matrix = event.getInventory().getMatrix();
         for (int i = 0, matrixLength = matrix.length; i < matrixLength; i++) {
             ItemStack itemStack = matrix[i];
-            if (itemStack.getType() != SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) continue;
+            if (itemStack == null || itemStack.getType() != SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) continue;
             final var itemMeta = itemStack.getItemMeta();
             assert itemMeta != null;
 

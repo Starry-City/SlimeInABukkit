@@ -1,7 +1,6 @@
 package com.danikvitek.slimeinabukkit;
 
 import org.bstats.bukkit.Metrics;
-import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,9 +10,8 @@ import java.util.Objects;
 import java.util.Random;
 
 public final class Main extends JavaPlugin {
-    private static final int PLUGIN_ID = 14716;
     public static final Random RANDOM = new Random();
-
+    private static final int PLUGIN_ID = 14716;
     private int calmSlimeCmd;
     private int activeSlimeCmd;
     private @NotNull String slimeBucketTitle = "";
@@ -51,5 +49,9 @@ public final class Main extends JavaPlugin {
 
     public boolean isDebug() {
         return debug;
+    }
+
+    public void debugLog(final @NotNull String message) {
+        if (this.isDebug()) this.getLogger().info(message);
     }
 }
