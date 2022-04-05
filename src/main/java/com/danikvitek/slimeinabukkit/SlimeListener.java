@@ -236,9 +236,9 @@ public class SlimeListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onCraftWithSlimeBucket(final @NotNull CraftItemEvent event) {
+    public void onCraftWithSlimeBucket(final @NotNull CraftItemEvent e) {
         final var slotsAndStacksToReplaceWithSlimeBucket = new LinkedHashMap<Integer, ItemStack>();
-        @NotNull ItemStack[] matrix = event.getInventory().getMatrix();
+        @NotNull ItemStack[] matrix = e.getInventory().getMatrix();
         for (int i = 0, matrixLength = matrix.length; i < matrixLength; i++) {
             ItemStack itemStack = matrix[i];
             if (itemStack == null || itemStack.getType() != SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) continue;
@@ -267,9 +267,13 @@ public class SlimeListener implements Listener {
                     removeUUID(clonedBucket);
                     newMatrix[slot] = clonedBucket;
                 });
-                event.getInventory().setMatrix(newMatrix);
+                for (int i = 0; i < 9; i++) {
+                    if (newMatrix[i] != null) continue;
+                    newMatrix[i] = e.getInventory().getMatrix()[i];
+                }
+                e.getInventory().setMatrix(newMatrix);
             }
-        }.runTask(main);
+        }.runTaskLater(main, 0L);
     }
 
     @EventHandler
