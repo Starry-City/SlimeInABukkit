@@ -256,7 +256,7 @@ public class SlimeListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                final var newMatrix = new ItemStack[9];
+                final var newMatrix = new ItemStack[matrix.length];
                 slotsAndStacksToReplaceWithSlimeBucket.forEach((slot, clonedBucket) -> {
                     clonedBucket.setType(Material.BUCKET);
                     final var clonedBucketMeta = clonedBucket.getItemMeta();
@@ -267,9 +267,10 @@ public class SlimeListener implements Listener {
                     removeUUID(clonedBucket);
                     newMatrix[slot] = clonedBucket;
                 });
-                for (int i = 0; i < 9; i++) {
+                @NotNull ItemStack[] matrix1 = e.getInventory().getMatrix();
+                for (int i = 0; i < matrix1.length; i++) {
                     if (newMatrix[i] != null) continue;
-                    newMatrix[i] = e.getInventory().getMatrix()[i];
+                    newMatrix[i] = matrix1[i];
                 }
                 e.getInventory().setMatrix(newMatrix);
             }
