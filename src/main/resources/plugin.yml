@@ -4,3 +4,15 @@ main: com.danikvitek.slimeinabukkit.Main
 api-version: 1.15
 prefix: SlimeInABukkit
 authors: [ Danik_Vitek ]
+
+permissions:
+  "slimeinabukkit.command.getslime":
+    default: op
+    description: "Allows to use the /getslime command"
+
+commands:
+  getslime:
+    permission: "slimeinabukkit.command.getslime"
+    aliases: [gs]
+    usage: "/getslime | /gs"
+    description: "Gives a bucket of slime to the player"

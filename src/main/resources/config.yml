@@ -4,4 +4,6 @@ custom-model-data:
   active-slime: 200
 bucket-title: "&rSlime in a bucket"
 
+can-pickup-slime: true
+
 debug: false
