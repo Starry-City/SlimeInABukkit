@@ -4,6 +4,11 @@ custom-model-data:
   active-slime: 200
 bucket-title: "&rSlime in a bucket"
 
+slime-chunk-message: "&7This chunk %chunk-status%&7 a Slime chunk"
+chunk-status:
+  true: "&ais"
+  false: "&cis not"
+
 can-pickup-slime: true
 
 debug: false

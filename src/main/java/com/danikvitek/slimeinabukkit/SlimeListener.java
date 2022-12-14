@@ -3,8 +3,12 @@ package com.danikvitek.slimeinabukkit;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.MagmaCube;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.event.Event;
@@ -30,16 +34,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.danikvitek.slimeinabukkit.Main.*;
+import static com.danikvitek.slimeinabukkit.SlimeInABukkitPlugin.*;
 
 public class SlimeListener implements Listener {
     private static final Set<UUID> interactingPlayers = new LinkedHashSet<>();
     private static final Map<Item, Chunk> lastItemChunks = new ConcurrentHashMap<>();
 
-    private final @NotNull Main main;
+    private final @NotNull SlimeInABukkitPlugin main;
 
     @Contract(pure = true)
-    public SlimeListener(final @NotNull Main main) {
+    public SlimeListener(final @NotNull SlimeInABukkitPlugin main) {
         this.main = main;
     }
 
@@ -61,7 +65,7 @@ public class SlimeListener implements Listener {
     private void updateSlime(final @Nullable ItemStack itemStack,
                              final boolean changeToActive) {
         if (itemStack == null || itemStack.getType() != SLIME_BUCKET_MATERIAL ||
-          !itemStack.hasItemMeta() || !itemStack.getItemMeta().hasCustomModelData())
+            !itemStack.hasItemMeta() || !Objects.requireNonNull(itemStack.getItemMeta()).hasCustomModelData())
             return;
 
         final var itemMeta = itemStack.getItemMeta();
@@ -82,7 +86,7 @@ public class SlimeListener implements Listener {
 
         if (checkCannotPickupSlime()) return;
 
-        if (!(event.getRightClicked() instanceof Slime)) return;
+        if (!(event.getRightClicked() instanceof Slime) || event.getRightClicked() instanceof MagmaCube) return;
         main.debugLog("PlayerInteractEntityEvent: clicked at slime");
 
         final var slime = (Slime) event.getRightClicked();
@@ -95,12 +99,12 @@ public class SlimeListener implements Listener {
             return;
         main.debugLog("PlayerInteractEvent: Hand = " + event.getHand());
         final var itemStack = event.getHand() == EquipmentSlot.HAND
-          ? inventory.getItemInMainHand()
-          : inventory.getItemInOffHand();
+                              ? inventory.getItemInMainHand()
+                              : inventory.getItemInOffHand();
 
         final var itemMeta = itemStack.hasItemMeta()
-          ? itemStack.getItemMeta()
-          : new ItemStack(SLIME_BUCKET_MATERIAL).getItemMeta();
+                             ? itemStack.getItemMeta()
+                             : new ItemStack(SLIME_BUCKET_MATERIAL).getItemMeta();
         assert itemMeta != null;
         if (itemStack.getType() != Material.BUCKET || itemMeta.hasCustomModelData()) return;
 
@@ -121,14 +125,14 @@ public class SlimeListener implements Listener {
         slimeBucketStack.setAmount(1);
         slimeBucketMeta.setCustomModelData(
           player.getLocation().getChunk().isSlimeChunk()
-            ? main.getActiveSlimeCmd()
-            : main.getCalmSlimeCmd()
+          ? main.getActiveSlimeCmd()
+          : main.getCalmSlimeCmd()
         );
         if (slime.getCustomName() != null) slimeBucketMeta.setDisplayName(slime.getCustomName());
         else slimeBucketMeta.setDisplayName(
           slimeBucketMeta.hasDisplayName()
-            ? slimeBucketMeta.getDisplayName()
-            : main.getSlimeBucketTitle()
+          ? slimeBucketMeta.getDisplayName()
+          : main.getSlimeBucketTitle()
         );
 
         slimeBucketStack.setItemMeta(slimeBucketMeta);
@@ -172,25 +176,25 @@ public class SlimeListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         main.debugLog("PlayerInteractEvent: Action = " + event.getAction());
 
-        final var player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (event.getHand() == EquipmentSlot.OFF_HAND &&
-          player.getInventory().getItemInMainHand().getType() != Material.AIR) return;
+            player.getInventory().getItemInMainHand().getType() != Material.AIR) return;
         main.debugLog("PlayerInteractEvent: Hand = " + event.getHand());
 
-        final var itemStack = event.getItem();
+        final ItemStack itemStack = event.getItem();
         if (itemStack == null || itemStack.getType() != SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) return;
 
-        final var itemMeta = itemStack.getItemMeta();
+        final ItemMeta itemMeta = itemStack.getItemMeta();
         assert itemMeta != null;
         if (!itemMeta.hasCustomModelData() ||
-          (itemMeta.getCustomModelData() != main.getCalmSlimeCmd() &&
-            itemMeta.getCustomModelData() != main.getActiveSlimeCmd())) return;
+            (itemMeta.getCustomModelData() != main.getCalmSlimeCmd() &&
+             itemMeta.getCustomModelData() != main.getActiveSlimeCmd())) return;
 
         placeSlime(event, player, itemStack, itemMeta);
     }
 
     private boolean checkCannotPickupSlime() {
-        if (!main.canPickupSlime()) {
+        if (!main.isCanPickupSlime()) {
             main.debugLog("can-pickup-slime = false");
             return true;
         }
@@ -207,11 +211,11 @@ public class SlimeListener implements Listener {
 
         event.setUseInteractedBlock(Event.Result.DENY);
 
-        final var block = event.getClickedBlock();
+        final Block block = event.getClickedBlock();
         assert block != null;
-        final var blockFace = event.getBlockFace();
+        final BlockFace blockFace = event.getBlockFace();
 
-        final var slimeReleaseLocation = block.getLocation().clone()
+        final Location slimeReleaseLocation = block.getLocation().clone()
           .add(new Vector(0.5, 0d, 0.5))
           .add(blockFace.getDirection());
         slimeReleaseLocation.setYaw(RANDOM.nextFloat() * 360f);
@@ -248,12 +252,14 @@ public class SlimeListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onCraftWithSlimeBucket(final @NotNull CraftItemEvent e) {
-        final var slotsAndStacksToReplaceWithSlimeBucket = new LinkedHashMap<Integer, ItemStack>();
+        final Map<Integer, ItemStack> slotsAndStacksToReplaceWithSlimeBucket = new LinkedHashMap<>();
         @NotNull ItemStack[] matrix = e.getInventory().getMatrix();
+
         for (int i = 0, matrixLength = matrix.length; i < matrixLength; i++) {
             ItemStack itemStack = matrix[i];
             if (itemStack == null || itemStack.getType() != SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) continue;
-            final var itemMeta = itemStack.getItemMeta();
+
+            final ItemMeta itemMeta = itemStack.getItemMeta();
             assert itemMeta != null;
 
             if (!itemMeta.hasCustomModelData()) continue;
@@ -267,10 +273,10 @@ public class SlimeListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                final var newMatrix = new ItemStack[matrix.length];
+                final ItemStack[] newMatrix = new ItemStack[matrix.length];
                 slotsAndStacksToReplaceWithSlimeBucket.forEach((slot, clonedBucket) -> {
                     clonedBucket.setType(Material.BUCKET);
-                    final var clonedBucketMeta = clonedBucket.getItemMeta();
+                    final ItemMeta clonedBucketMeta = clonedBucket.getItemMeta();
                     assert clonedBucketMeta != null;
                     clonedBucketMeta.setCustomModelData(null);
                     clonedBucketMeta.setDisplayName(null);
@@ -290,11 +296,11 @@ public class SlimeListener implements Listener {
 
     @EventHandler
     public void onSlimeBucketDrop(final @NotNull PlayerDropItemEvent event) {
-        final var itemDrop = event.getItemDrop();
-        final var itemStack = itemDrop.getItemStack();
+        final Item itemDrop = event.getItemDrop();
+        final ItemStack itemStack = itemDrop.getItemStack();
 
         if (itemStack.getType() != SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) return;
-        final var itemMeta = itemStack.getItemMeta();
+        final ItemMeta itemMeta = itemStack.getItemMeta();
         assert itemMeta != null;
 
         if (!itemMeta.hasCustomModelData()) return;
@@ -311,7 +317,7 @@ public class SlimeListener implements Listener {
                     this.cancel();
                 }
 
-                final var currentChunk = itemDrop.getLocation().getChunk();
+                final Chunk currentChunk = itemDrop.getLocation().getChunk();
                 if (!Objects.equals(currentChunk, lastItemChunks.get(itemDrop))) {
                     lastItemChunks.put(itemDrop, currentChunk);
                     updateSlime(itemStack, currentChunk.isSlimeChunk());

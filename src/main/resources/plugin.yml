@@ -1,18 +1,31 @@
 name: SlimeInABukkit
 version: '${project.version}'
-main: com.danikvitek.slimeinabukkit.Main
+main: com.danikvitek.slimeinabukkit.SlimeInABukkitPlugin
 api-version: 1.15
 prefix: SlimeInABukkit
 authors: [ Danik_Vitek ]
 
 permissions:
-  "slimeinabukkit.command.getslime":
+  "slimeinabukkit.command.*":
     default: op
-    description: "Allows to use the /getslime command"
+    children:
+      - "slimeinabukkit.command.get_slime"
+      - "slimeinabukkit.command.slime_chunk"
+  "slimeinabukkit.command.get_slime":
+    default: op
+    description: "Allows to use the /get_slime command"
+  "slimeinabukkit.command.slime_chunk":
+    default: op
+    description: "Allows to use the /slime_chunk command"
 
 commands:
-  getslime:
-    permission: "slimeinabukkit.command.getslime"
-    aliases: [gs]
-    usage: "/getslime | /gs"
+  get_slime:
+    permission: "slimeinabukkit.command.get_slime"
+    aliases: [ gs ]
+    usage: "/get_slime | /gs"
     description: "Gives a bucket of slime to the player"
+  slime_chunk:
+    permission: "slimeinabukkit.command.slime_chunk"
+    aliases: [ sc ]
+    usage: "/slime_chunk | /sc"
+    description: "Tells you, if the chunk you are in is a slime chunk"
