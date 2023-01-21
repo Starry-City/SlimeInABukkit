@@ -16,14 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SlimeChunkCommandTest {
-    private ServerMock server;
     private SlimeInABukkitPlugin plugin;
     private WorldMock world;
     private PlayerMock player;
 
     @BeforeEach
     void setUp() {
-        server = MockBukkit.mock();
+        ServerMock server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
         player = server.addPlayer();
         player.setLocation(new Location(world, 0, 60, 0));
