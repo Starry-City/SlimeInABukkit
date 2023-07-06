@@ -41,10 +41,7 @@ public final class SlimeInABukkitPlugin extends JavaPlugin {
         this.isTest = false;
     }
 
-    private SlimeInABukkitPlugin(JavaPluginLoader loader,
-                                 PluginDescriptionFile descriptionFile,
-                                 File dataFolder,
-                                 File file) {
+    private SlimeInABukkitPlugin(JavaPluginLoader loader, PluginDescriptionFile descriptionFile, File dataFolder, File file) {
         super(loader, descriptionFile, dataFolder, file);
         this.isTest = true;
     }
@@ -71,28 +68,10 @@ public final class SlimeInABukkitPlugin extends JavaPlugin {
     private void getConfigValues() {
         this.calmSlimeCmd = this.getConfig().getInt("custom-model-data.calm-slime", 404);
         this.activeSlimeCmd = this.getConfig().getInt("custom-model-data.active-slime", 200);
-        this.slimeBucketTitle = ChatColor.translateAlternateColorCodes(
-                '&',
-                Objects.requireNonNull(this.getConfig().getString("bucket-title", DEFAULT_BUCKET_TITLE))
-        );
-        this.slimeChunkMessage = ChatColor.translateAlternateColorCodes(
-                '&',
-                Objects.requireNonNull(this.getConfig().getString(
-                        "slime-chunk-message", DEFAULT_SLIME_CHUNK_MESSAGE
-                ))
-        );
-        this.chunkStatusTrue = ChatColor.translateAlternateColorCodes(
-                '&',
-                Objects.requireNonNull(this.getConfig().getString(
-                        "chunk-status.true", DEFAULT_CHUNK_STATUS_TRUE
-                ))
-        );
-        this.chunkStatusFalse = ChatColor.translateAlternateColorCodes(
-                '&',
-                Objects.requireNonNull(this.getConfig().getString(
-                        "chunk-status.false", DEFAULT_CHUNK_STATUS_FALSE
-                ))
-        );
+        this.slimeBucketTitle = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(this.getConfig().getString("bucket-title", DEFAULT_BUCKET_TITLE)));
+        this.slimeChunkMessage = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(this.getConfig().getString("slime-chunk-message", DEFAULT_SLIME_CHUNK_MESSAGE)));
+        this.chunkStatusTrue = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(this.getConfig().getString("chunk-status.true", DEFAULT_CHUNK_STATUS_TRUE)));
+        this.chunkStatusFalse = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(this.getConfig().getString("chunk-status.false", DEFAULT_CHUNK_STATUS_FALSE)));
         this.canPickupSlime = this.getConfig().getBoolean("can-pickup-slime", DEFAULT_CAN_PICKUP_SLIME);
         this.debug = this.getConfig().getBoolean("debug", false);
     }
