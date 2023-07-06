@@ -1,16 +1,15 @@
 package com.starrycity.slimeinabukkit;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.MagmaCube;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Slime;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -48,11 +47,12 @@ public class SlimeListener implements Listener {
     @EventHandler
     public void onPlayerMove(final @NotNull PlayerMoveEvent event) {
         final var fromChunk = event.getFrom().getChunk();
-        final var toChunk = event.getTo() == null ? null : event.getTo().getChunk();
+        event.getTo();
+        final var toChunk = event.getTo().getChunk();
         if (Objects.equals(fromChunk, toChunk)) return;
         main.debugLog("PlayerMoveEvent was caught; Changing chunks");
 
-        updateSlimes(event.getPlayer().getInventory(), toChunk != null && toChunk.isSlimeChunk());
+        updateSlimes(event.getPlayer().getInventory(), toChunk.isSlimeChunk());
     }
 
     private void updateSlimes(final @NotNull PlayerInventory inventory, final boolean changeToActive) {
@@ -111,9 +111,11 @@ public class SlimeListener implements Listener {
         final var slimeBucketStack = bucketStack.clone();
         slimeBucketStack.setAmount(1);
         slimeBucketMeta.setCustomModelData(player.getLocation().getChunk().isSlimeChunk() ? main.getActiveSlimeCmd() : main.getCalmSlimeCmd());
-        if (slime.getCustomName() != null) slimeBucketMeta.setDisplayName(slime.getCustomName());
+        if (slime.customName() != null)
+            slimeBucketMeta.displayName(slime.customName());
         else
-            slimeBucketMeta.setDisplayName(slimeBucketMeta.hasDisplayName() ? slimeBucketMeta.getDisplayName() : main.getSlimeBucketTitle());
+//            slimeBucketMeta.displayName(slimeBucketMeta.hasDisplayName() ? slimeBucketMeta.displayName() : main.getSlimeBucketTitle());
+            slimeBucketMeta.displayName(slimeBucketMeta.hasDisplayName() ? slimeBucketMeta.displayName() : Component.text(Objects.requireNonNull(main.getSlimeBucketTitle())));
 
         slimeBucketStack.setItemMeta(slimeBucketMeta);
         slimeBucketStack.setType(SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL);
@@ -196,12 +198,19 @@ public class SlimeListener implements Listener {
 
         player.getWorld().spawn(slimeReleaseLocation, Slime.class, slime -> {
             slime.setSize(1);
-            if (itemMeta.hasDisplayName() && !Objects.equals(ChatColor.stripColor(itemMeta.getDisplayName()), ChatColor.stripColor(main.getSlimeBucketTitle())))
-                slime.setCustomName(itemMeta.getDisplayName());
+            if (itemMeta.hasDisplayName())
+                if (itemMeta.getDisplayName().equals(main.getSlimeBucketTitle()))
+                    slime.customName(null);
+                else
+                    slime.customName(itemMeta.displayName());
+            else
+                slime.customName(null);
+//            if (itemMeta.hasDisplayName() && !Objects.equals(ChatColor.stripColor(String.valueOf(itemMeta.displayName())), ChatColor.stripColor(main.getSlimeBucketTitle())))
+//                slime.customName(itemMeta.displayName());
         });
 
         itemMeta.setCustomModelData(null);
-        itemMeta.setDisplayName(null);
+        itemMeta.displayName(null);
         itemStack.setItemMeta(itemMeta);
         itemStack.setType(Material.BUCKET);
         removeUUID(itemStack);
@@ -253,7 +262,7 @@ public class SlimeListener implements Listener {
                     final ItemMeta clonedBucketMeta = clonedBucket.getItemMeta();
                     assert clonedBucketMeta != null;
                     clonedBucketMeta.setCustomModelData(null);
-                    clonedBucketMeta.setDisplayName(null);
+                    clonedBucketMeta.displayName(null);
                     clonedBucket.setItemMeta(clonedBucketMeta);
                     removeUUID(clonedBucket);
                     newMatrix[slot] = clonedBucket;

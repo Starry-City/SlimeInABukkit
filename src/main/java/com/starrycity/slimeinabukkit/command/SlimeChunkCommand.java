@@ -30,8 +30,8 @@ public class SlimeChunkCommand implements CommandExecutor {
         final Player player = (Player) sender;
 
         final String chunkStatus = player.getLocation().getChunk().isSlimeChunk()
-                                   ? this.main.getChunkStatusTrue()
-                                   : this.main.getChunkStatusFalse();
+                ? this.main.getChunkStatusTrue()
+                : this.main.getChunkStatusFalse();
         player.sendMessage(this.main.getSlimeChunkMessage().replace(SlimeInABukkitPlugin.CHUNK_STATUS_PLACEHOLDER, chunkStatus));
     }
 }

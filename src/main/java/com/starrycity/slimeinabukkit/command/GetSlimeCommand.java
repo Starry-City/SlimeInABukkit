@@ -2,6 +2,7 @@ package com.starrycity.slimeinabukkit.command;
 
 import com.starrycity.slimeinabukkit.SlimeInABukkitPlugin;
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.starrycity.slimeinabukkit.SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL;
@@ -45,7 +47,7 @@ public class GetSlimeCommand implements CommandExecutor {
         assert slimeBucketMeta != null;
         final Location location = player.getLocation();
         slimeBucketMeta.setCustomModelData(location.getChunk().isSlimeChunk() ? main.getActiveSlimeCmd() : main.getCalmSlimeCmd());
-        slimeBucketMeta.setDisplayName(main.getSlimeBucketTitle());
+        slimeBucketMeta.displayName(Component.text(Objects.requireNonNull(main.getSlimeBucketTitle())));
         slimeBucket.setItemMeta(slimeBucketMeta);
         final NBTItem nbtItem = new NBTItem(slimeBucket);
         nbtItem.setUUID(SLIME_BUCKET_UUID_KEY, UUID.randomUUID()); // for it to be not stackable
