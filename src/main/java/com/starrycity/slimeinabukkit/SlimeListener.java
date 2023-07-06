@@ -60,10 +60,8 @@ public class SlimeListener implements Listener {
         for (final var itemStack : inventory) updateSlime(itemStack, changeToActive);
     }
 
-    private void updateSlime(final @Nullable ItemStack itemStack,
-                             final boolean changeToActive) {
-        if (itemStack == null || itemStack.getType() != SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL ||
-            !itemStack.hasItemMeta() || !Objects.requireNonNull(itemStack.getItemMeta()).hasCustomModelData())
+    private void updateSlime(final @Nullable ItemStack itemStack, final boolean changeToActive) {
+        if (itemStack == null || itemStack.getType() != SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta() || !Objects.requireNonNull(itemStack.getItemMeta()).hasCustomModelData())
             return;
 
         final var itemMeta = itemStack.getItemMeta();
@@ -96,42 +94,26 @@ public class SlimeListener implements Listener {
         if (event.getHand() == EquipmentSlot.OFF_HAND && inventory.getItemInMainHand().getType() != Material.AIR)
             return;
         main.debugLog("PlayerInteractEvent: Hand = " + event.getHand());
-        final var itemStack = event.getHand() == EquipmentSlot.HAND
-                              ? inventory.getItemInMainHand()
-                              : inventory.getItemInOffHand();
+        final var itemStack = event.getHand() == EquipmentSlot.HAND ? inventory.getItemInMainHand() : inventory.getItemInOffHand();
 
-        final var itemMeta = itemStack.hasItemMeta()
-                             ? itemStack.getItemMeta()
-                             : new ItemStack(SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL).getItemMeta();
+        final var itemMeta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : new ItemStack(SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL).getItemMeta();
         assert itemMeta != null;
         if (itemStack.getType() != Material.BUCKET || itemMeta.hasCustomModelData()) return;
 
         pickupSlime(event, slime, player, itemStack, itemMeta, event.getHand());
     }
 
-    private void pickupSlime(final @NotNull PlayerInteractEntityEvent event,
-                             final @NotNull Slime slime,
-                             final @NotNull Player player,
-                             final @NotNull ItemStack bucketStack,
-                             final @NotNull ItemMeta slimeBucketMeta,
-                             final @NotNull EquipmentSlot bucketStackSlot) {
+    private void pickupSlime(final @NotNull PlayerInteractEntityEvent event, final @NotNull Slime slime, final @NotNull Player player, final @NotNull ItemStack bucketStack, final @NotNull ItemMeta slimeBucketMeta, final @NotNull EquipmentSlot bucketStackSlot) {
         if (interactingPlayers.contains(player.getUniqueId())) return;
         interactingPlayers.add(player.getUniqueId());
 
         slime.remove();
         final var slimeBucketStack = bucketStack.clone();
         slimeBucketStack.setAmount(1);
-        slimeBucketMeta.setCustomModelData(
-          player.getLocation().getChunk().isSlimeChunk()
-          ? main.getActiveSlimeCmd()
-          : main.getCalmSlimeCmd()
-        );
+        slimeBucketMeta.setCustomModelData(player.getLocation().getChunk().isSlimeChunk() ? main.getActiveSlimeCmd() : main.getCalmSlimeCmd());
         if (slime.getCustomName() != null) slimeBucketMeta.setDisplayName(slime.getCustomName());
-        else slimeBucketMeta.setDisplayName(
-          slimeBucketMeta.hasDisplayName()
-          ? slimeBucketMeta.getDisplayName()
-          : main.getSlimeBucketTitle()
-        );
+        else
+            slimeBucketMeta.setDisplayName(slimeBucketMeta.hasDisplayName() ? slimeBucketMeta.getDisplayName() : main.getSlimeBucketTitle());
 
         slimeBucketStack.setItemMeta(slimeBucketMeta);
         slimeBucketStack.setType(SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL);
@@ -158,8 +140,7 @@ public class SlimeListener implements Listener {
         }.runTask(main);
     }
 
-    private void assignUUID(final @NotNull ItemStack slimeBucketStack,
-                            final @NotNull UUID uuid) {
+    private void assignUUID(final @NotNull ItemStack slimeBucketStack, final @NotNull UUID uuid) {
         final var nbtItem = new NBTItem(slimeBucketStack);
         nbtItem.setUUID(SlimeInABukkitPlugin.SLIME_BUCKET_UUID_KEY, uuid);
         nbtItem.applyNBT(slimeBucketStack);
@@ -175,18 +156,18 @@ public class SlimeListener implements Listener {
         main.debugLog("PlayerInteractEvent: Action = " + event.getAction());
 
         final Player player = event.getPlayer();
-        if (event.getHand() == EquipmentSlot.OFF_HAND &&
-            player.getInventory().getItemInMainHand().getType() != Material.AIR) return;
+        if (event.getHand() == EquipmentSlot.OFF_HAND && player.getInventory().getItemInMainHand().getType() != Material.AIR)
+            return;
         main.debugLog("PlayerInteractEvent: Hand = " + event.getHand());
 
         final ItemStack itemStack = event.getItem();
-        if (itemStack == null || itemStack.getType() != SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) return;
+        if (itemStack == null || itemStack.getType() != SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta())
+            return;
 
         final ItemMeta itemMeta = itemStack.getItemMeta();
         assert itemMeta != null;
-        if (!itemMeta.hasCustomModelData() ||
-            (itemMeta.getCustomModelData() != main.getCalmSlimeCmd() &&
-             itemMeta.getCustomModelData() != main.getActiveSlimeCmd())) return;
+        if (!itemMeta.hasCustomModelData() || (itemMeta.getCustomModelData() != main.getCalmSlimeCmd() && itemMeta.getCustomModelData() != main.getActiveSlimeCmd()))
+            return;
 
         placeSlime(event, player, itemStack, itemMeta);
     }
@@ -200,10 +181,7 @@ public class SlimeListener implements Listener {
         return false;
     }
 
-    private void placeSlime(final @NotNull PlayerInteractEvent event,
-                            final @NotNull Player player,
-                            final @NotNull ItemStack itemStack,
-                            final @NotNull ItemMeta itemMeta) {
+    private void placeSlime(final @NotNull PlayerInteractEvent event, final @NotNull Player player, final @NotNull ItemStack itemStack, final @NotNull ItemMeta itemMeta) {
         if (interactingPlayers.contains(player.getUniqueId())) return;
         interactingPlayers.add(player.getUniqueId());
 
@@ -213,16 +191,13 @@ public class SlimeListener implements Listener {
         assert block != null;
         final BlockFace blockFace = event.getBlockFace();
 
-        final Location slimeReleaseLocation = block.getLocation().clone()
-          .add(new Vector(0.5, 0d, 0.5))
-          .add(blockFace.getDirection());
+        final Location slimeReleaseLocation = block.getLocation().clone().add(new Vector(0.5, 0d, 0.5)).add(blockFace.getDirection());
         slimeReleaseLocation.setYaw(SlimeInABukkitPlugin.RANDOM.nextFloat() * 360f);
 
         player.getWorld().spawn(slimeReleaseLocation, Slime.class, slime -> {
             slime.setSize(1);
-            if (itemMeta.hasDisplayName() && !Objects.equals(
-              ChatColor.stripColor(itemMeta.getDisplayName()), ChatColor.stripColor(main.getSlimeBucketTitle())
-            )) slime.setCustomName(itemMeta.getDisplayName());
+            if (itemMeta.hasDisplayName() && !Objects.equals(ChatColor.stripColor(itemMeta.getDisplayName()), ChatColor.stripColor(main.getSlimeBucketTitle())))
+                slime.setCustomName(itemMeta.getDisplayName());
         });
 
         itemMeta.setCustomModelData(null);
@@ -255,7 +230,8 @@ public class SlimeListener implements Listener {
 
         for (int i = 0, matrixLength = matrix.length; i < matrixLength; i++) {
             ItemStack itemStack = matrix[i];
-            if (itemStack == null || itemStack.getType() != SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) continue;
+            if (itemStack == null || itemStack.getType() != SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta())
+                continue;
 
             final ItemMeta itemMeta = itemStack.getItemMeta();
             assert itemMeta != null;
