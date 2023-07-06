@@ -1,9 +1,9 @@
 name: SlimeInABukkit
 version: '${project.version}'
-main: com.danikvitek.slimeinabukkit.SlimeInABukkitPlugin
+main: com.starrycity.slimeinabukkit.SlimeInABukkitPlugin
 api-version: 1.15
 prefix: SlimeInABukkit
-authors: [ Danik_Vitek ]
+authors: [ Danik_Vitek, poyu39 ]
 
 permissions:
   "slimeinabukkit.command.*":
