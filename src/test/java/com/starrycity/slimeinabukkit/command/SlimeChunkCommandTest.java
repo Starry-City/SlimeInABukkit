@@ -1,11 +1,11 @@
-package com.danikvitek.slimeinabukkit.command;
+package com.starrycity.slimeinabukkit.command;
 
 import be.seeseemelk.mockbukkit.ChunkMock;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import com.danikvitek.slimeinabukkit.SlimeInABukkitPlugin;
+import com.starrycity.slimeinabukkit.SlimeInABukkitPlugin;
 import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
 import org.junit.jupiter.api.AfterEach;
@@ -44,18 +44,18 @@ class SlimeChunkCommandTest {
 
         assertNotNull(slimeChunkCommand);
         slimeChunkCommand.getExecutor().onCommand(
-          player,
-          slimeChunkCommand,
-          "slime_chunk",
-          new String[0]
+                player,
+                slimeChunkCommand,
+                "slime_chunk",
+                new String[0]
         );
 
         assertEquals(
-          plugin.getSlimeChunkMessage().replace(
-            SlimeInABukkitPlugin.CHUNK_STATUS_PLACEHOLDER,
-            plugin.getChunkStatusTrue()
-          ),
-          player.nextMessage()
+                plugin.getSlimeChunkMessage().replace(
+                        SlimeInABukkitPlugin.CHUNK_STATUS_PLACEHOLDER,
+                        plugin.getChunkStatusTrue()
+                ),
+                player.nextMessage()
         );
     }
 
@@ -69,18 +69,18 @@ class SlimeChunkCommandTest {
 
         assertNotNull(slimeChunkCommand);
         slimeChunkCommand.getExecutor().onCommand(
-          player,
-          slimeChunkCommand,
-          "slime_chunk",
-          new String[0]
+                player,
+                slimeChunkCommand,
+                "slime_chunk",
+                new String[0]
         );
 
         assertEquals(
-          plugin.getSlimeChunkMessage().replace(
-            SlimeInABukkitPlugin.CHUNK_STATUS_PLACEHOLDER,
-            plugin.getChunkStatusFalse()
-          ),
-          player.nextMessage()
+                plugin.getSlimeChunkMessage().replace(
+                        SlimeInABukkitPlugin.CHUNK_STATUS_PLACEHOLDER,
+                        plugin.getChunkStatusFalse()
+                ),
+                player.nextMessage()
         );
     }
 }

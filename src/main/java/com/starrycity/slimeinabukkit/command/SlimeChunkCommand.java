@@ -1,6 +1,6 @@
-package com.danikvitek.slimeinabukkit.command;
+package com.starrycity.slimeinabukkit.command;
 
-import com.danikvitek.slimeinabukkit.SlimeInABukkitPlugin;
+import com.starrycity.slimeinabukkit.SlimeInABukkitPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

@@ -1,7 +1,7 @@
-package com.danikvitek.slimeinabukkit;
+package com.starrycity.slimeinabukkit;
 
-import com.danikvitek.slimeinabukkit.command.GetSlimeCommand;
-import com.danikvitek.slimeinabukkit.command.SlimeChunkCommand;
+import com.starrycity.slimeinabukkit.command.GetSlimeCommand;
+import com.starrycity.slimeinabukkit.command.SlimeChunkCommand;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

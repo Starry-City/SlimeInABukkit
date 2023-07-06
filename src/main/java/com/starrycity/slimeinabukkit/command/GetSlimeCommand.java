@@ -1,6 +1,6 @@
-package com.danikvitek.slimeinabukkit.command;
+package com.starrycity.slimeinabukkit.command;
 
-import com.danikvitek.slimeinabukkit.SlimeInABukkitPlugin;
+import com.starrycity.slimeinabukkit.SlimeInABukkitPlugin;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-import static com.danikvitek.slimeinabukkit.SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL;
-import static com.danikvitek.slimeinabukkit.SlimeInABukkitPlugin.SLIME_BUCKET_UUID_KEY;
+import static com.starrycity.slimeinabukkit.SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL;
+import static com.starrycity.slimeinabukkit.SlimeInABukkitPlugin.SLIME_BUCKET_UUID_KEY;
 
 public class GetSlimeCommand implements CommandExecutor {
     private final SlimeInABukkitPlugin main;
@@ -27,10 +27,7 @@ public class GetSlimeCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender,
-                             @NotNull Command command,
-                             @NotNull String label,
-                             @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         getSlimeImpl(sender);
         return true;
     }
@@ -47,11 +44,7 @@ public class GetSlimeCommand implements CommandExecutor {
         final ItemMeta slimeBucketMeta = slimeBucket.getItemMeta();
         assert slimeBucketMeta != null;
         final Location location = player.getLocation();
-        slimeBucketMeta.setCustomModelData(
-          location.getChunk().isSlimeChunk()
-          ? main.getActiveSlimeCmd()
-          : main.getCalmSlimeCmd()
-        );
+        slimeBucketMeta.setCustomModelData(location.getChunk().isSlimeChunk() ? main.getActiveSlimeCmd() : main.getCalmSlimeCmd());
         slimeBucketMeta.setDisplayName(main.getSlimeBucketTitle());
         slimeBucket.setItemMeta(slimeBucketMeta);
         final NBTItem nbtItem = new NBTItem(slimeBucket);
@@ -60,7 +53,6 @@ public class GetSlimeCommand implements CommandExecutor {
 
         final World world = player.getWorld();
         world.playSound(location, Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
-        if (!player.getInventory().addItem(slimeBucket).isEmpty())
-            world.dropItem(player.getEyeLocation(), slimeBucket);
+        if (!player.getInventory().addItem(slimeBucket).isEmpty()) world.dropItem(player.getEyeLocation(), slimeBucket);
     }
 }

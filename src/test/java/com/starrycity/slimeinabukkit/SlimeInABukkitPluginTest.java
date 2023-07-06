@@ -1,4 +1,4 @@
-package com.danikvitek.slimeinabukkit;
+package com.starrycity.slimeinabukkit;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import org.junit.jupiter.api.AfterEach;

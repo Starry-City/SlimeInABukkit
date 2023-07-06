@@ -1,4 +1,4 @@
-package com.danikvitek.slimeinabukkit;
+package com.starrycity.slimeinabukkit;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.ChatColor;
@@ -34,8 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.danikvitek.slimeinabukkit.SlimeInABukkitPlugin.*;
-
 public class SlimeListener implements Listener {
     private static final Set<UUID> interactingPlayers = new LinkedHashSet<>();
     private static final Map<Item, Chunk> lastItemChunks = new ConcurrentHashMap<>();
@@ -64,7 +62,7 @@ public class SlimeListener implements Listener {
 
     private void updateSlime(final @Nullable ItemStack itemStack,
                              final boolean changeToActive) {
-        if (itemStack == null || itemStack.getType() != SLIME_BUCKET_MATERIAL ||
+        if (itemStack == null || itemStack.getType() != SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL ||
             !itemStack.hasItemMeta() || !Objects.requireNonNull(itemStack.getItemMeta()).hasCustomModelData())
             return;
 
@@ -104,7 +102,7 @@ public class SlimeListener implements Listener {
 
         final var itemMeta = itemStack.hasItemMeta()
                              ? itemStack.getItemMeta()
-                             : new ItemStack(SLIME_BUCKET_MATERIAL).getItemMeta();
+                             : new ItemStack(SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL).getItemMeta();
         assert itemMeta != null;
         if (itemStack.getType() != Material.BUCKET || itemMeta.hasCustomModelData()) return;
 
@@ -136,7 +134,7 @@ public class SlimeListener implements Listener {
         );
 
         slimeBucketStack.setItemMeta(slimeBucketMeta);
-        slimeBucketStack.setType(SLIME_BUCKET_MATERIAL);
+        slimeBucketStack.setType(SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL);
         assignUUID(slimeBucketStack, slime.getUniqueId());
         if (bucketStack.getAmount() > 1) {
             bucketStack.setAmount(bucketStack.getAmount() - 1);
@@ -163,7 +161,7 @@ public class SlimeListener implements Listener {
     private void assignUUID(final @NotNull ItemStack slimeBucketStack,
                             final @NotNull UUID uuid) {
         final var nbtItem = new NBTItem(slimeBucketStack);
-        nbtItem.setUUID(SLIME_BUCKET_UUID_KEY, uuid);
+        nbtItem.setUUID(SlimeInABukkitPlugin.SLIME_BUCKET_UUID_KEY, uuid);
         nbtItem.applyNBT(slimeBucketStack);
     }
 
@@ -182,7 +180,7 @@ public class SlimeListener implements Listener {
         main.debugLog("PlayerInteractEvent: Hand = " + event.getHand());
 
         final ItemStack itemStack = event.getItem();
-        if (itemStack == null || itemStack.getType() != SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) return;
+        if (itemStack == null || itemStack.getType() != SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) return;
 
         final ItemMeta itemMeta = itemStack.getItemMeta();
         assert itemMeta != null;
@@ -218,7 +216,7 @@ public class SlimeListener implements Listener {
         final Location slimeReleaseLocation = block.getLocation().clone()
           .add(new Vector(0.5, 0d, 0.5))
           .add(blockFace.getDirection());
-        slimeReleaseLocation.setYaw(RANDOM.nextFloat() * 360f);
+        slimeReleaseLocation.setYaw(SlimeInABukkitPlugin.RANDOM.nextFloat() * 360f);
 
         player.getWorld().spawn(slimeReleaseLocation, Slime.class, slime -> {
             slime.setSize(1);
@@ -246,7 +244,7 @@ public class SlimeListener implements Listener {
 
     private void removeUUID(final @NotNull ItemStack itemStack) {
         final var nbtItem = new NBTItem(itemStack);
-        nbtItem.removeKey(SLIME_BUCKET_UUID_KEY);
+        nbtItem.removeKey(SlimeInABukkitPlugin.SLIME_BUCKET_UUID_KEY);
         nbtItem.applyNBT(itemStack);
     }
 
@@ -257,7 +255,7 @@ public class SlimeListener implements Listener {
 
         for (int i = 0, matrixLength = matrix.length; i < matrixLength; i++) {
             ItemStack itemStack = matrix[i];
-            if (itemStack == null || itemStack.getType() != SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) continue;
+            if (itemStack == null || itemStack.getType() != SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) continue;
 
             final ItemMeta itemMeta = itemStack.getItemMeta();
             assert itemMeta != null;
@@ -299,7 +297,7 @@ public class SlimeListener implements Listener {
         final Item itemDrop = event.getItemDrop();
         final ItemStack itemStack = itemDrop.getItemStack();
 
-        if (itemStack.getType() != SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) return;
+        if (itemStack.getType() != SlimeInABukkitPlugin.SLIME_BUCKET_MATERIAL || !itemStack.hasItemMeta()) return;
         final ItemMeta itemMeta = itemStack.getItemMeta();
         assert itemMeta != null;
 
