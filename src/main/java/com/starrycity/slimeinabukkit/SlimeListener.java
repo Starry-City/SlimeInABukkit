@@ -2,8 +2,6 @@ package com.starrycity.slimeinabukkit;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
-import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -47,7 +45,6 @@ public class SlimeListener implements Listener {
     @EventHandler
     public void onPlayerMove(final @NotNull PlayerMoveEvent event) {
         final var fromChunk = event.getFrom().getChunk();
-        event.getTo();
         final var toChunk = event.getTo().getChunk();
         if (Objects.equals(fromChunk, toChunk)) return;
         main.debugLog("PlayerMoveEvent was caught; Changing chunks");
